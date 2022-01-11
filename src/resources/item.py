@@ -6,7 +6,7 @@ from models.item import ItemModel
 class Items(Resource):
     @jwt_required()
     def get(self):
-        return {'items':items}
+        pass
 
 class Item(Resource):
     parser = reqparse.RequestParser()
@@ -20,7 +20,7 @@ class Item(Resource):
         if item:
             return item.json(), 200
         return {'item': item}, 404
-    
+    @jwt_required()
     def post(self, name):
         if ItemModel.find_by_name(name):
             return {'message': "item '{}' already exists".format(name)}, 400
@@ -31,7 +31,7 @@ class Item(Resource):
             item.insert()
         except:
             return {'message': 'Error inserting item'}
-        return item, 201
+        return item.json(), 201
 
     def put (self, name):
         if ItemModel.find_by_name(name):
@@ -43,7 +43,7 @@ class Item(Resource):
         except:
             return {'message': 'Error updating item'}
 
-        return item, 200
+        return updated_item.json(), 200
 
     def delete (self, name):
         pass
