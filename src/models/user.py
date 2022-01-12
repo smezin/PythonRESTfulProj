@@ -6,11 +6,14 @@ class UserModel(db.Model):
     username = db.Column(db.String(40))
     password = db.Column(db.String(40))
 
-    def __init__(self, _id, username, password):
-        self.id = _id
+    def __init__(self, username, password):
         self.username = username
         self.password = password
     
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+        
     @classmethod
     def find_by_name(cls, username):
         return cls.query.filter_by(username=username).first()

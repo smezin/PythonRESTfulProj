@@ -11,19 +11,14 @@ class UserRegister(Resource):
     parser.add_argument('password',
         type=str,
         required=True,
-        help='must provide password')      
+        help='must provide password')   
+
     def post(self):
         data = UserRegister.parser.parse_args()
         if UserModel.find_by_name(data['username']):
-            return {'message': 'user already exists'}, 409
-            
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-        query = "INSERT INTO users VALUES (NULL, ?, ?)"
-        cursor.execute(query, (data['username'], data['password']))
+            return {"message": "A user with that username already exists"}, 400
 
-        connection.commit()
-        connection.close()
-    def get(self):
-        user = UserModel.find_by_name('popo')
-        return {'user': user}
+        user = UserModel(data['username'], data['password'])
+        user.save_to_db()
+
+        return {"message": "User created successfully."}, 201
