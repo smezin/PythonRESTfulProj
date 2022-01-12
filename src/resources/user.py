@@ -24,8 +24,6 @@ class UserRegister(Resource):
 
         connection.commit()
         connection.close()
-
-        return {'message': 'User created successfully'}, 201
-    
-    
-    
+    def get(self):
+        user = UserModel.find_by_name('popo')
+        return {'user': user}

@@ -1,4 +1,3 @@
-import sqlite3
 from db import db
 
 class ItemModel(db.Model):
@@ -16,10 +15,12 @@ class ItemModel(db.Model):
     
     @classmethod
     def find_by_name(cls, name):
-        pass
+        return cls.query.filter_by(name=name).first()
 
-    def insert(self):
-        pass
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
 
-    def update(self):
-        pass
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
