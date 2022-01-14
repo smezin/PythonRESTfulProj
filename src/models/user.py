@@ -7,10 +7,10 @@ class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(40))
     password = db.Column(db.String(40))
-    
+
     def __init__(self, username, password):
         self.username = username
-        self.password = password
+        self.password = bcrypt.hashpw(password, bcrypt.gensalt())
     
     def save_to_db(self):
         db.session.add(self)
