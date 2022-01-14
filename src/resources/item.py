@@ -9,7 +9,10 @@ class Items(Resource):
         items = [item.json() for item in ItemModel.find_all()]
         if user_id:
             return {'items': items}, 200
-        return {item['name'] for item in ItemModel.find_all()}, 200
+        return {
+            'items': [item['item name'] for item in items],
+            'message': 'More info available for logged users'
+            }, 200
         #return {'items': list(map(lambda i: i.json(), ItemModel.query.all()))} #lambda version to list comprehention
 
 class Item(Resource):
@@ -31,7 +34,7 @@ class Item(Resource):
             return item.json(), 200
         return {'item': item}, 404
         
-    @jwt_required()
+    @jwt_required(fresh=True)
     def post(self, name):
         if ItemModel.find_by_name(name):
             return {'message': "An item with name '{}' already exists.".format(name)}, 400
