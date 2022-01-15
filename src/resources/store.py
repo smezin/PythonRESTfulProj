@@ -18,10 +18,7 @@ class Store(Resource):
         if store:
             return {'message': 'Store named: {} already exists.'.format(name)}, 400
         store = StoreModel(name)
-        try:
-            store.save_to_db()
-        except:
-            return {'message': 'Failed creating store'}, 500
+        store.save_to_db()
         return store.json(), 201
 
     def delete(self, name):

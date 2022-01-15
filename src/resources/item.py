@@ -41,10 +41,7 @@ class Item(Resource):
 
         data = Item.parser.parse_args()
         item = ItemModel(name, **data)
-        try:
-            item.save_to_db()
-        except:
-            return {"message": "An error occurred inserting the item."}, 500
+        item.save_to_db()
         return item.json(), 201
     
     @jwt_required()

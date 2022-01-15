@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from flask_restful import Api, reqparse
 from flask_jwt_extended import JWTManager
+from werkzeug.exceptions import HTTPException
 
 from resources.user import UserRegister, User, UserLogin, UserLogout, TokenRefresh
 from resources.item import Item, Items
@@ -21,6 +22,13 @@ def create_tables():
     db.create_all()
 
 jwt = JWTManager(app)
+
+@app.errorhandler(Exception)
+def global_error_handler(e):
+    code = 500
+    if isinstance(e, HTTPException):
+        code = e.code
+    return jsonify(error=str(e)), code
 
 @jwt.additional_claims_loader
 def add_claims_to_jwt(identity):
