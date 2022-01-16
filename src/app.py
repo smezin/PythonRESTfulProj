@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_restful import Api, reqparse
 from flask_jwt_extended import JWTManager
 from werkzeug.exceptions import HTTPException
@@ -8,13 +8,15 @@ from resources.item import Item, Items
 from resources.store import Store, StoreList
 from blacklist import BLACKLIST
 from db import db
+import config
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Matrix2021!@127.0.0.1:3306/pystore'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
-app.config['JWT_SECRET_KEY'] = 'mySecretKey'
+app.config['JWT_SECRET_KEY'] = config.jwt_secret
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 60 #seconds
 api = Api(app)
 
 @app.before_first_request
@@ -22,6 +24,16 @@ def create_tables():
     db.create_all()
 
 jwt = JWTManager(app)
+
+#middleware
+@app.before_request
+def before():
+    print(request.get_json())
+
+@app.after_request
+def after(response):
+    print(response.get_json())
+    return response
 
 @app.errorhandler(Exception)
 def global_error_handler(e):
