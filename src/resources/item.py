@@ -1,8 +1,11 @@
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from models.item import ItemModel
+from middleware.decorator import middleware_decorator
+
 
 class Items(Resource):
+    @middleware_decorator()
     @jwt_required(optional=True)
     def get(self):
         user_id = get_jwt_identity()

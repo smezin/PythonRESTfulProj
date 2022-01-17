@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
-from flask_restful import Api, reqparse
+from flask_restful import Api, reqparse, HTTPException
 from flask_jwt_extended import JWTManager
-from werkzeug.exceptions import HTTPException
+from werkzeug.wrappers import Request, Response
 
 from resources.user import UserRegister, User, UserLogin, UserLogout, TokenRefresh
 from resources.item import Item, Items
@@ -16,7 +16,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['JWT_SECRET_KEY'] = config.jwt_secret
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 60 #seconds
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 600 #seconds
 api = Api(app)
 
 @app.before_first_request
@@ -25,14 +25,14 @@ def create_tables():
 
 jwt = JWTManager(app)
 
-#middleware
+#middleware by before/after
 @app.before_request
 def before():
-    print(request.get_json())
+    print('before_request, request:{}'.format(request.get_json()))
 
 @app.after_request
 def after(response):
-    print(response.get_json())
+    print('after_request, response:{}'.format(response.get_json()))
     return response
 
 @app.errorhandler(Exception)
@@ -41,6 +41,7 @@ def global_error_handler(e):
     if isinstance(e, HTTPException):
         code = e.code
     return jsonify(error=str(e)), code
+
 
 @jwt.additional_claims_loader
 def add_claims_to_jwt(identity):
