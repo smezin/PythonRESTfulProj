@@ -11,11 +11,8 @@ class Items(Resource):
         user_id = get_jwt_identity()
         items = [item.json() for item in ItemModel.find_all()]
         if user_id:
-            return {'items': items}, 200
-        return {
-            'items': [item['item name'] for item in items],
-            'message': 'More info available for logged users'
-            }, 200
+            return {'items for {}'.format(user_id): items}, 200
+        return {'items for anonymous': items}, 200
         #return {'items': list(map(lambda i: i.json(), ItemModel.query.all()))} #lambda version to list comprehention
 
 class Item(Resource):
@@ -30,15 +27,15 @@ class Item(Resource):
         required=True,
         help="Gimme store!"
         )
-    @jwt_required()
-    def get(self, name):
+    #@jwt_required()
+    def get(self, name: str):
         item = ItemModel.find_by_name(name)
         if item:
             return item.json(), 200
         return {'item': item}, 404
         
     @jwt_required(fresh=True)
-    def post(self, name):
+    def post(self, name: str):
         if ItemModel.find_by_name(name):
             return {'message': "An item with name '{}' already exists.".format(name)}, 400
 
@@ -48,7 +45,7 @@ class Item(Resource):
         return item.json(), 201
     
     @jwt_required()
-    def put (self, name):
+    def put (self, name: str):
         data = Item.parser.parse_args()
         item = ItemModel.find_by_name(name)
 
@@ -61,7 +58,7 @@ class Item(Resource):
         return item.json(), 200
     
     @jwt_required()
-    def delete (self, name):
+    def delete (self, name: str):
         claims = get_jwt()
         if not claims['is admin']:
             return {'message': 'Admin privilage required'}
