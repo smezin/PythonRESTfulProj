@@ -4,21 +4,23 @@ from db import db
 
 StoreJSON = Dict[str, Union[int, str, List[ItemJSON]]]
 
-class StoreModel(db.Model):
-    __tablename__ = 'stores'
 
-    id = db.Column(db.Integer, primary_key=True) 
+class StoreModel(db.Model):
+    __tablename__ = "stores"
+
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False, unique=True)
-    items = db.relationship('ItemModel', lazy='dynamic')
+    items = db.relationship("ItemModel", lazy="dynamic")
 
     def __init__(self, name: str):
         self.name = name
 
     def json(self) -> StoreJSON:
         return {
-            'store name': self.name, 
-            'store_id': self.id, 
-            'items': [item.json() for item in self.items.all()]}
+            "store name": self.name,
+            "store_id": self.id,
+            "items": [item.json() for item in self.items.all()],
+        }
 
     @classmethod
     def find_all(cls) -> List["StoreModel"]:
