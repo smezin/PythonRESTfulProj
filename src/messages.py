@@ -7,5 +7,7 @@ user_messages = {
         "user_already_exists": "A user with that username already exists",
         "must_provide_password": "must provide password",
         "must_provide_username": "must provide username",
+        "invalid_username": "invalid username",
+        "password_too_short": "password too short"
     }
 }

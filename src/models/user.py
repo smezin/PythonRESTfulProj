@@ -1,4 +1,6 @@
 from db import db
+from messages import user_messages
+from config import lang
 from sqlalchemy.orm import validates
 import bcrypt
 from typing import Dict, Union
@@ -16,17 +18,12 @@ class UserModel(db.Model):
     @validates("username")
     def validate_username_format(self, key, value):
         if len(value) < 4:
-            return {"message": "invalid username"}
+            raise ValueError(user_messages[lang]["invalid_username"])
         return value
 
     def __init__(self, username: str, password: str):
         self.username = username
         self.password = bcrypt.hashpw(password, bcrypt.gensalt())
-
-    def password_setter(self, password: str):
-        if len(password) < 4:
-            raise ValueError("password too short")
-        self.password = password
 
     def save_to_db(self) -> None:
         db.session.add(self)
